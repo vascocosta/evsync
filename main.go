@@ -15,12 +15,15 @@ import (
 	"github.com/emersion/go-ical"
 )
 
-const (
-	Layout = "2006-01-02 15:04:05 UTC"
-	TZ     = "Europe/Lisbon"
-)
+const ConfigFile = ".evsync.json"
 
 type EventFormatter func(source EventSource, summary string, dateTime string) string
+
+type Config struct {
+	Layout  string        `json:"layout"`
+	TZ      string        `json:"tz"`
+	Sources []EventSource `json:"sources"`
+}
 
 type EventSource struct {
 	Name         string         `json:"name"`
@@ -44,6 +47,26 @@ func removeNonASCII(input string) string {
 	return string(output)
 }
 
+func getConfig() (*Config, error) {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return nil, err
+	}
+	f, err := os.Open(home + "/" + ConfigFile)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+
+	var config Config
+	dec := json.NewDecoder(f)
+	if err := dec.Decode(&config); err != nil {
+		return nil, err
+	}
+
+	return &config, nil
+}
+
 func getDecoder(url string) (*ical.Decoder, *http.Response, error) {
 	resp, err := http.Get(url)
 	if err != nil {
@@ -53,45 +76,33 @@ func getDecoder(url string) (*ical.Decoder, *http.Response, error) {
 	return ical.NewDecoder(resp.Body), resp, nil
 }
 
-func getSources() ([]EventSource, error) {
-	f, err := os.Open("sources.json")
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
-
-	var sources []EventSource
-	dec := json.NewDecoder(f)
-	if err := dec.Decode(&sources); err != nil {
-		return nil, err
-	}
-
-	for i, source := range sources {
+func getSources(config *Config) ([]EventSource, error) {
+	for i, source := range config.Sources {
 		switch source.FormatterKey {
 		case "f1Formatter":
-			sources[i].Formatter = f1Formatter
+			config.Sources[i].Formatter = f1Formatter
 		case "f2Formatter":
-			sources[i].Formatter = f2Formatter
+			config.Sources[i].Formatter = f2Formatter
 		case "f3Formatter":
-			sources[i].Formatter = f3Formatter
+			config.Sources[i].Formatter = f3Formatter
 		case "indyCarFormatter":
-			sources[i].Formatter = indyCarFormatter
+			config.Sources[i].Formatter = indyCarFormatter
 		case "motoGPFormatter":
-			sources[i].Formatter = motoGPFormatter
+			config.Sources[i].Formatter = motoGPFormatter
 		case "spaceFormatter":
-			sources[i].Formatter = spaceFormatter
+			config.Sources[i].Formatter = spaceFormatter
 		case "defaultFormatter":
-			sources[i].Formatter = defaultFormatter
+			config.Sources[i].Formatter = defaultFormatter
 		default:
 			return nil, errors.New("Unknown formatter")
 		}
 	}
 
-	return sources, nil
+	return config.Sources, nil
 
 }
 
-func printEvents(dec *ical.Decoder, source EventSource, formatter EventFormatter, ch chan string) {
+func printEvents(config *Config, dec *ical.Decoder, source EventSource, formatter EventFormatter, ch chan string) {
 	for {
 		cal, err := dec.Decode()
 		if err == io.EOF {
@@ -101,7 +112,7 @@ func printEvents(dec *ical.Decoder, source EventSource, formatter EventFormatter
 		}
 
 		for _, event := range cal.Events() {
-			location, err := time.LoadLocation(TZ)
+			location, err := time.LoadLocation(config.TZ)
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -128,7 +139,7 @@ func printEvents(dec *ical.Decoder, source EventSource, formatter EventFormatter
 			}
 
 			if source.Filter == "" || matches > 0 {
-				ch <- removeNonASCII(formatter(source, summary, dt.Format(Layout)))
+				ch <- removeNonASCII(formatter(source, summary, dt.Format(config.Layout)))
 			}
 		}
 	}
@@ -138,7 +149,11 @@ func main() {
 	var wg sync.WaitGroup
 	ch := make(chan string)
 
-	sources, err := getSources()
+	config, err := getConfig()
+	if err != nil {
+		log.Fatal(err)
+	}
+	sources, err := getSources(config)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -156,7 +171,7 @@ func main() {
 			}
 			defer resp.Body.Close()
 
-			printEvents(dec, source, source.Formatter, ch)
+			printEvents(config, dec, source, source.Formatter, ch)
 		}()
 	}
 
