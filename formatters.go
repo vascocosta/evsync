@@ -132,3 +132,14 @@ func spaceFormatter(source EventSource, summary string, dateTime string) string 
 		)
 	}
 }
+
+func defaultFormatter(source EventSource, summary string, dateTime string) string {
+	return fmt.Sprintf(
+		"[%v],%v, ,%v,%v,%v,false",
+		source.Name,
+		summary,
+		dateTime,
+		source.Channel,
+		source.Tags,
+	)
+}

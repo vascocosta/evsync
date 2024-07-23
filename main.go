@@ -80,6 +80,8 @@ func getSources() ([]EventSource, error) {
 			sources[i].Formatter = motoGPFormatter
 		case "spaceFormatter":
 			sources[i].Formatter = spaceFormatter
+		case "defaultFormatter":
+			sources[i].Formatter = defaultFormatter
 		default:
 			return nil, errors.New("Unknown formatter")
 		}
