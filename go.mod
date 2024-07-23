@@ -1,4 +1,4 @@
-module main
+module github.com/vascocosta/evsync
 
 go 1.22.5
 
