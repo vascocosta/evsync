@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"time"
@@ -52,7 +53,8 @@ func getConfig() (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
-	f, err := os.Open(home + "/" + ConfigFile)
+	path := filepath.Join(home, ConfigFile)
+	f, err := os.Open(path)
 	if err != nil {
 		return nil, err
 	}
