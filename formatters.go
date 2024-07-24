@@ -114,23 +114,17 @@ func motoGPFormatter(source EventSource, summary string, dateTime string) string
 }
 
 func spaceFormatter(source EventSource, summary string, dateTime string) string {
-	if strings.Contains(summary, "Falcon") {
-		return fmt.Sprintf(
-			"[Space],%v,Launch,%v,%v,%v,true",
-			summary,
-			dateTime,
-			source.Channel,
-			source.Tags,
-		)
-	} else {
-		return fmt.Sprintf(
-			"[Space],%v,Launch,%v,%v,%v,true",
-			summary,
-			dateTime,
-			source.Channel,
-			source.Tags,
-		)
+	if strings.Contains(strings.ToLower(summary), "falcon") {
+		source.Tags += " spacex"
 	}
+
+	return fmt.Sprintf(
+		"[Space],%v,Launch,%v,%v,%v,true",
+		summary,
+		dateTime,
+		source.Channel,
+		source.Tags,
+	)
 }
 
 func defaultFormatter(source EventSource, summary string, dateTime string) string {
