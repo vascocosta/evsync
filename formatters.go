@@ -18,7 +18,7 @@ func f1Formatter(source EventSource, summary string, dateTime string) string {
 		splitSummary := strings.Split(summary, " - ")
 
 		return fmt.Sprintf(
-			"[Formula 1],%v,%v,%v,%v,%v,true",
+			"[Formula 1],%v,%v,%v,%v,%v,%v",
 			strings.ReplaceAll(
 				strings.ReplaceAll(
 					splitSummary[0],
@@ -32,14 +32,16 @@ func f1Formatter(source EventSource, summary string, dateTime string) string {
 			dateTime,
 			source.Channel,
 			source.Tags,
+			source.Notify,
 		)
 	} else {
 		return fmt.Sprintf(
-			"[Formula 1],%v,NA,%v,%v,%v,true",
+			"[Formula 1],%v,NA,%v,%v,%v,%v",
 			summary,
 			dateTime,
 			source.Channel,
 			source.Tags,
+			source.Notify,
 		)
 	}
 }
@@ -49,20 +51,22 @@ func f2Formatter(source EventSource, summary string, dateTime string) string {
 		splitSummary := strings.Split(summary, " - ")
 
 		return fmt.Sprintf(
-			"[Formula 2],%v,%v,%v,%v,%v,false",
+			"[Formula 2],%v,%v,%v,%v,%v,%v",
 			strings.ReplaceAll(splitSummary[0], " FIA FORMULA 2: The Championship ", ""),
 			splitSummary[1],
 			dateTime,
 			source.Channel,
 			source.Tags,
+			source.Notify,
 		)
 	} else {
 		return fmt.Sprintf(
-			"[Formula 2],%v,NA,%v,%v,%v,false",
+			"[Formula 2],%v,NA,%v,%v,%v,%v",
 			summary,
 			dateTime,
 			source.Channel,
 			source.Tags,
+			source.Notify,
 		)
 	}
 }
@@ -72,31 +76,34 @@ func f3Formatter(source EventSource, summary string, dateTime string) string {
 		splitSummary := strings.Split(summary, " - ")
 
 		return fmt.Sprintf(
-			"[Formula 3],%v,%v,%v,%v,%v,false",
+			"[Formula 3],%v,%v,%v,%v,%v,%v",
 			strings.ReplaceAll(splitSummary[0], " FIA FORMULA 3: The Championship ", ""),
 			splitSummary[1],
 			dateTime,
 			source.Channel,
 			source.Tags,
+			source.Notify,
 		)
 	} else {
 		return fmt.Sprintf(
-			"[Formula 3],%v,NA,%v,%v,%v,false",
+			"[Formula 3],%v,NA,%v,%v,%v,%v",
 			summary,
 			dateTime,
 			source.Channel,
 			source.Tags,
+			source.Notify,
 		)
 	}
 }
 
 func indyCarFormatter(source EventSource, summary string, dateTime string) string {
 	return fmt.Sprintf(
-		"[IndyCar],%v,Race,%v,%v,%v,false",
+		"[IndyCar],%v,Race,%v,%v,%v,%v",
 		summary[5:],
 		dateTime,
 		source.Channel,
 		source.Tags,
+		source.Notify,
 	)
 }
 
@@ -104,12 +111,13 @@ func motoGPFormatter(source EventSource, summary string, dateTime string) string
 	splitSummary := strings.Split(summary, "(")
 
 	return fmt.Sprintf(
-		"[MotoGP],%v,%v,%v,%v,%v,false",
+		"[MotoGP],%v,%v,%v,%v,%v,%v",
 		strings.ReplaceAll(splitSummary[1], ")", ""),
 		strings.TrimSpace(strings.ReplaceAll(splitSummary[0], "MOTOGP: ", "")),
 		dateTime,
 		source.Channel,
 		source.Tags,
+		source.Notify,
 	)
 }
 
@@ -119,21 +127,23 @@ func spaceFormatter(source EventSource, summary string, dateTime string) string 
 	}
 
 	return fmt.Sprintf(
-		"[Space],%v,Launch,%v,%v,%v,true",
+		"[Space],%v,Launch,%v,%v,%v,%v",
 		summary,
 		dateTime,
 		source.Channel,
 		source.Tags,
+		source.Notify,
 	)
 }
 
 func defaultFormatter(source EventSource, summary string, dateTime string) string {
 	return fmt.Sprintf(
-		"[%v],%v, ,%v,%v,%v,false",
+		"[%v],%v, ,%v,%v,%v,%v",
 		source.Name,
 		summary,
 		dateTime,
 		source.Channel,
 		source.Tags,
+		source.Notify,
 	)
 }

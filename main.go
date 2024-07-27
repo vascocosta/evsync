@@ -32,6 +32,7 @@ type EventSource struct {
 	Channel      string         `json:"channel"`
 	Filter       string         `json:"filter"`
 	Tags         string         `json:"tags"`
+	Notify       bool           `json:"notify"`
 	Formatter    EventFormatter `json:"-"`
 	FormatterKey string         `json:"formatter"`
 }
