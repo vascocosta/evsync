@@ -111,7 +111,8 @@ func printEvents(config *Config, dec *ical.Decoder, source EventSource, formatte
 		if err == io.EOF {
 			break
 		} else if err != nil {
-			log.Fatal(err)
+			log.Println(err)
+			continue
 		}
 
 		for _, event := range cal.Events() {
@@ -122,7 +123,8 @@ func printEvents(config *Config, dec *ical.Decoder, source EventSource, formatte
 
 			dt, err := event.DateTimeStart(location)
 			if err != nil {
-				log.Fatal(err)
+				log.Println(err)
+				continue
 			}
 
 			if dt.Before(time.Now()) {
@@ -131,7 +133,8 @@ func printEvents(config *Config, dec *ical.Decoder, source EventSource, formatte
 
 			summary, err := event.Props.Text(ical.PropSummary)
 			if err != nil {
-				log.Fatal(err)
+				log.Println(err)
+				continue
 			}
 
 			matches := 0
