@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -139,7 +138,7 @@ func printEvents(config *Config, dec *ical.Decoder, source EventSource, formatte
 			}
 
 			if strings.Contains(summary, ",") {
-				summary = strconv.Quote(summary)
+				summary = strings.ReplaceAll(summary, ",", "")
 			}
 
 			matches := 0
