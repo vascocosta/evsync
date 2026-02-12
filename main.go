@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -135,6 +136,10 @@ func printEvents(config *Config, dec *ical.Decoder, source EventSource, formatte
 			if err != nil {
 				log.Println(err)
 				continue
+			}
+
+			if strings.Contains(summary, ",") {
+				summary = strconv.Quote(summary)
 			}
 
 			matches := 0
